@@ -5,8 +5,11 @@ import {
   parseCreationOptionsFromJSON,
   parseRequestOptionsFromJSON,
 } from "@github/webauthn-json/browser-ponyfill";
+import { useState } from "react";
 
 const FidoAuth = () => {
+  const [data, setdata] = useState<any>([]);
+
   function getRegistrations(): [] {
     const registrations = JSON.parse(
       localStorage.webauthnExampleRegistrations || "[]"
@@ -38,7 +41,8 @@ const FidoAuth = () => {
         },
       },
     });
-    await create(cco);
+    const res = await create(cco);
+    setdata(res);
   }
 
   async function authenticate(options?: {
@@ -51,22 +55,33 @@ const FidoAuth = () => {
         userVerification: "discouraged",
       },
     });
+    setdata(cro);
     return get(cro);
   }
 
   return (
     <div>
-      <p>FIDO Auth</p>
-      <button onClick={register} className="btn btn-success me-5">
-        Register
-      </button>
-      <button
-        type="submit"
-        onClick={() => authenticate()}
-        className="btn btn-info ms-5"
-      >
-        Authenticate
-      </button>
+      <div className="">
+        <p>FIDO Auth</p>
+        <button onClick={register} className="btn btn-success me-5">
+          Register
+        </button>
+        <button
+          type="submit"
+          onClick={() => authenticate()}
+          className="btn btn-info ms-5"
+        >
+          Authenticate
+        </button>
+      </div>
+      <div className="">
+        <textarea
+          className="mt-3"
+          value={JSON.stringify(data)}
+          cols={100}
+          rows={10}
+        ></textarea>
+      </div>
     </div>
   );
 };
